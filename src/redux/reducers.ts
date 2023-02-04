@@ -1,15 +1,19 @@
+import {SortingByState} from '../components/ModalSort';
+import {TransactionState} from '../types/types';
 import {
   FETCH_TRANSACTIONS_FAILED,
   FETCH_TRANSACTIONS_REQUEST,
   FETCH_TRANSACTIONS_SUCCESS,
   SET_SELECTED_TRANSACTION,
+  SET_SORTING_TRANSACTION,
 } from './constants';
 
-export interface InitialReducersState {
-  readonly isLoading: boolean;
-  readonly isError: boolean;
-  readonly transactions: Array<Object>;
-  readonly selectedTransaction: Object;
+export interface ReducersState {
+  isLoading: boolean;
+  isError: boolean;
+  transactions: Array<TransactionState>;
+  selectedTransaction: TransactionState | null;
+  sortingBy: SortingByState;
 }
 
 interface ActionRedux {
@@ -17,11 +21,12 @@ interface ActionRedux {
   payload: any;
 }
 
-const initialState: InitialReducersState = {
+const initialState: ReducersState = {
   transactions: [],
-  selectedTransaction: {},
+  selectedTransaction: null,
   isLoading: false,
   isError: false,
+  sortingBy: {value: '', label: 'URUTKAN'},
 };
 
 function reducers(state = initialState, action: ActionRedux) {
@@ -49,6 +54,11 @@ function reducers(state = initialState, action: ActionRedux) {
       return {
         ...state,
         selectedTransaction: action.payload,
+      };
+    case SET_SORTING_TRANSACTION:
+      return {
+        ...state,
+        sortingBy: action.payload,
       };
     default:
       return state;

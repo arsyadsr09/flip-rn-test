@@ -2,43 +2,71 @@ import axios from 'axios';
 import {API_URL} from '@env';
 import {
   FETCH_TRANSACTIONS_FAILED,
-  FETCH_TRANSACTIONS_REQUEST,
   FETCH_TRANSACTIONS_SUCCESS,
   SET_SELECTED_TRANSACTION,
+  SET_SORTING_TRANSACTION,
 } from './constants';
-import {ThunkDispatch} from 'redux-thunk';
-import {AnyAction} from 'redux';
+import {SortingByState} from '../components/ModalSort';
+import {TransactionState} from '../types/types';
 
-export const fetchTransactions =
-  () => async (dispatch: ThunkDispatch<{}, {}, AnyAction>) => {
-    dispatch({
-      type: FETCH_TRANSACTIONS_REQUEST,
-    });
-    try {
-      const response = await axios.get(`${API_URL}/frontend-test`);
+export const fetchTransactions = async (sort: SortingByState) => {
+  try {
+    const response = await axios.get(`${API_URL}/frontend-test`);
 
-      const {data} = response;
+    const {data} = response;
 
-      dispatch({
-        type: FETCH_TRANSACTIONS_SUCCESS,
-        payload: {
-          data: data,
-        },
-      });
-    } catch (e) {
-      dispatch({
-        type: FETCH_TRANSACTIONS_FAILED,
-        payload: {
-          errorMessage: e,
-        },
-      });
+    const result: Array<TransactionState> = Object.values(data);
+    let sortedResult: Array<TransactionState> | undefined;
+
+    if (sort && sort.value !== '') {
+      switch (sort.value) {
+        case 'name_asc':
+          sortedResult = result.sort((a, b) =>
+            b.beneficiary_name > a.beneficiary_name ? -1 : 1,
+          );
+          break;
+        case 'name_desc':
+          sortedResult = result.sort((a, b) =>
+            b.beneficiary_name > a.beneficiary_name ? 1 : -1,
+          );
+          break;
+        case 'created_at_asc':
+          sortedResult = result.sort((a, b) =>
+            b.created_at > a.created_at ? -1 : 1,
+          );
+          break;
+        case 'created_at_desc':
+          sortedResult = result.sort((a, b) =>
+            b.created_at > a.created_at ? 1 : -1,
+          );
+          break;
+      }
     }
-  };
 
-export const setSelectedTransaction =
-  (data: Object) => async (dispatch: ThunkDispatch<{}, {}, AnyAction>) => {
-    dispatch({
-      type: SET_SELECTED_TRANSACTION,
-      payload: data,
-    });
+    return {
+      type: FETCH_TRANSACTIONS_SUCCESS,
+      payload: sortedResult || result,
+    };
+  } catch (e) {
+    return {
+      type: FETCH_TRANSACTIONS_FAILED,
+      payload: {
+        errorMessage: e,
+      },
+    };
+  }
+};
+
+export const setSortTransaction = (value: Object) => {
+  return {
+    type: SET_SORTING_TRANSACTION,
+    payload: value,
   };
+};
+
+export const setSelectedTransaction = (value: Object) => {
+  return {
+    type: SET_SELECTED_TRANSACTION,
+    payload: value,
+  };
+};
