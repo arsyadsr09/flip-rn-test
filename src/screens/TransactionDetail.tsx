@@ -1,7 +1,15 @@
-import React, {useEffect, useState} from 'react';
-import {Text, StyleSheet, View, TouchableOpacity} from 'react-native';
+import React, {useState} from 'react';
+import {
+  Text,
+  StyleSheet,
+  View,
+  TouchableOpacity,
+  Clipboard,
+} from 'react-native';
 import {useSelector} from 'react-redux';
-import Clipboard from '@react-native-community/clipboard';
+// issue using Clipboard RN comunnity: TypeError: Cannot read property 'setString' of null, js engine: hermes
+// so decided to use Clipboard deprecated from RN
+// import Clipboard from '@react-native-community/clipboard';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import {ReducersState} from '../redux/reducers';
 import {TransactionState} from '../types/types';
@@ -14,12 +22,8 @@ const TransactionDetail = () => {
   const [isShow, setIsShow] = useState<boolean>(true);
 
   const onCopyTrxID = () => {
-    Clipboard.setString(`${selectedTrx?.id}`);
+    Clipboard.setString(`#${selectedTrx?.id}`);
   };
-
-  useEffect(() => {
-    console.log(selectedTrx);
-  }, [selectedTrx]);
 
   return (
     <View style={styles.container}>
@@ -62,7 +66,7 @@ const TransactionDetail = () => {
         <View style={[styles.rowDetailCard, styles.mt8px]}>
           <Text style={styles.detailText}>{selectedTrx?.account_number}</Text>
           <Text style={styles.detailText}>
-            {convertAmount(selectedTrx?.amount!)}
+            {convertAmount(selectedTrx?.amount || 0)}
           </Text>
         </View>
         <View style={[styles.rowDetailCard, styles.mt20px]}>

@@ -99,7 +99,9 @@ const TransactionCard = (props: TransactionCardProps) => {
             {trx.beneficiary_name.toUpperCase()}
           </Text>
           <View style={styles.row}>
-            <Text style={styles.detailText}>{convertAmount(trx.amount)}</Text>
+            <Text style={styles.detailText}>
+              {convertAmount(trx.amount || 0)}
+            </Text>
             <Text style={styles.dotSeparator}>●</Text>
             <Text style={styles.detailText}>{renderDate()}</Text>
           </View>

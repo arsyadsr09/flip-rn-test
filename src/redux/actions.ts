@@ -32,12 +32,12 @@ export const fetchTransactions = async (sort: SortingByState) => {
           break;
         case 'created_at_asc':
           sortedResult = result.sort((a, b) =>
-            b.created_at > a.created_at ? -1 : 1,
+            b.created_at > a.created_at ? 1 : -1,
           );
           break;
         case 'created_at_desc':
           sortedResult = result.sort((a, b) =>
-            b.created_at > a.created_at ? 1 : -1,
+            b.created_at > a.created_at ? -1 : 1,
           );
           break;
       }
